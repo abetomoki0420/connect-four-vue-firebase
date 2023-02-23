@@ -1,37 +1,31 @@
-import * as z from "zod"
-import * as R from "remeda"
+import * as z from "zod";
+import * as R from "remeda";
 
 export const gameBoardSchema = z.array(
-  z.array(
-    z.union([
-      z.literal('empty'),
-      z.literal('red'),
-      z.literal('yellow'),
-    ])
-  )
-)
+  z.array(z.union([z.literal("empty"), z.literal("red"), z.literal("yellow")]))
+);
 
 export const gameStatusSchema = z.object({
   turn: z.boolean(),
   waiting: z.boolean(),
   started: z.boolean(),
-})
+});
 
-export type GameBoard = z.infer<typeof gameBoardSchema>
-export type CellState = GameBoard[number][number]
+export type GameBoard = z.infer<typeof gameBoardSchema>;
+export type CellState = GameBoard[number][number];
 
-export type GameStatus = z.infer<typeof gameStatusSchema>
+export type GameStatus = z.infer<typeof gameStatusSchema>;
 
-export const ROWS = 6
-export const COLS = 7
+export const ROWS = 6;
+export const COLS = 7;
 
-export const createBoard = () => { 
+export const createBoard = () => {
   const board: CellState[][] = new Array(ROWS);
   for (let row = 0; row < ROWS; row++) {
     board[row] = new Array(COLS).fill("empty");
   }
-  return board
-}
+  return board;
+};
 
 export const checkWin = (board: CellState[][], color: CellState): boolean => {
   // Check for horizontal wins
@@ -43,7 +37,7 @@ export const checkWin = (board: CellState[][], color: CellState): boolean => {
         board?.[row]?.[col + 2] === color &&
         board?.[row]?.[col + 3] === color
       ) {
-        return true
+        return true;
       }
     }
   }
@@ -57,7 +51,7 @@ export const checkWin = (board: CellState[][], color: CellState): boolean => {
         board?.[row + 2]?.[col] === color &&
         board?.[row + 3]?.[col] === color
       ) {
-        return true
+        return true;
       }
     }
   }
@@ -71,7 +65,7 @@ export const checkWin = (board: CellState[][], color: CellState): boolean => {
         board?.[row + 2]?.[col + 2] === color &&
         board?.[row + 3]?.[col + 3] === color
       ) {
-        return true
+        return true;
       }
     }
   }
@@ -85,19 +79,20 @@ export const checkWin = (board: CellState[][], color: CellState): boolean => {
         board?.[row + 2]?.[col - 2] === color &&
         board?.[row + 3]?.[col - 3] === color
       ) {
-        return true
+        return true;
       }
     }
   }
   // No win found
-  return false
-}
+  return false;
+};
 
 export const checkCellCount = (board: GameBoard) => {
-  return R.map.indexed( board[0], (_col, i) => {
-    return R.pipe(board,
+  return R.map.indexed(board[0], (_col, i) => {
+    return R.pipe(
+      board,
       R.map((row) => row[i]),
-      R.countBy( (cell) => cell !== 'empty' )
-      )
-  })
-}
+      R.countBy((cell) => cell !== "empty")
+    );
+  });
+};
