@@ -7,27 +7,21 @@ const { gameset, player, board, selectCol, cellCounts, resultStatus, status } =
 </script>
 
 <template>
-  
   <div v-if="status.waiting">waiting...</div>
   <div v-else class="container">
     <div class="board">
-      <div>
-        Your color: {{ player }} 
-      </div>
-      <div>
-        It is {{ status.turn ? "red" : "yellow" }} turn
-      </div>
-      <div v-if="gameset"> {{ resultStatus.red ? "red" : "yellow" }} won</div>
+      <div>Your color: {{ player }}</div>
+      <div>It is {{ status.turn ? "red" : "yellow" }} turn</div>
+      <div v-if="gameset">{{ resultStatus.red ? "red" : "yellow" }} won</div>
       <div v-for="(r, ri) in board" :key="ri" class="row">
         <div
           v-for="(c, ci) in r"
           :key="`${ri}${ci}`"
           class="col"
-          :class=" board[ROWS - ri - 1][ci]"
+          :class="board[ROWS - ri - 1][ci]"
           @click="selectCol(ci)"
         >
-          <span class="cell">
-          </span>
+          <span class="cell"> </span>
         </div>
       </div>
     </div>
@@ -45,7 +39,7 @@ const { gameset, player, board, selectCol, cellCounts, resultStatus, status } =
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
-  border: 1px solid rgba(1,1,1,0.2);
+  border: 1px solid rgba(1, 1, 1, 0.2);
   padding: 1rem;
   border-radius: 1rem;
 }
