@@ -1,6 +1,6 @@
 import { app } from "../../firebase"
 import { getFirestore, doc, onSnapshot, getDoc, setDoc } from "firebase/firestore"
-import { GameBoard, gameBoardSchema } from "../lib"
+import { GameBoard, gameBoardSchema, gameStatusSchema } from "../lib"
 import * as z from "zod"
 
 const db = getFirestore(app)
@@ -45,11 +45,7 @@ export const saveBoard = (board: GameBoard) => {
 
 const STATUS = "status"
 
-const storageStatusSchema = z.object({
-  waiting: z.boolean(),
-  started: z.boolean(),
-})
-
+const storageStatusSchema = gameStatusSchema
 type StorageStatus = z.infer<typeof storageStatusSchema>
 
 export const subscribeStatus = (cb: (status: StorageStatus) => void) => {
@@ -60,6 +56,7 @@ export const subscribeStatus = (cb: (status: StorageStatus) => void) => {
       cb(data as StorageStatus)
     }else{
       cb({
+        turn: true,
         waiting: false,
         started: false
       }) 

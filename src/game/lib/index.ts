@@ -11,9 +11,16 @@ export const gameBoardSchema = z.array(
   )
 )
 
+export const gameStatusSchema = z.object({
+  turn: z.boolean(),
+  waiting: z.boolean(),
+  started: z.boolean(),
+})
+
 export type GameBoard = z.infer<typeof gameBoardSchema>
 export type CellState = GameBoard[number][number]
 
+export type GameStatus = z.infer<typeof gameStatusSchema>
 
 export const ROWS = 6
 export const COLS = 7

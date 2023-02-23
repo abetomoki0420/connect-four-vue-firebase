@@ -1,10 +1,11 @@
-import { ref, computed, onUnmounted } from "vue"
+import { ref, computed } from "vue"
 import {
   CellState,
   checkCellCount,
   checkWin,
   createBoard,
   GameBoard,
+  GameStatus,
   ROWS,
 } from "../lib"
 import {
@@ -16,8 +17,12 @@ import {
 
 export const useGame = () => {
   const player = ref<Omit<CellState, "empty">>('yellow')
-  const waiting = ref(false)
-  const started = ref(false)
+  
+  const status = ref<GameStatus>({
+    turn: true,
+    waiting: false,
+    started: false
+  })
 
   const board = ref(createBoard())
   const setBoard = (_board: GameBoard) => {
@@ -25,19 +30,17 @@ export const useGame = () => {
   }
 
   const unsubscribe = subscribeBoard(setBoard)
-  const unsubscribeStatus = subscribeStatus( async (status) => {
-    waiting.value = status.waiting
-    started.value = status.started
+  const unsubscribeStatus = subscribeStatus( async (s) => {
+    status.value = s
 
-    if(started.value){
+    if(status.value.started){
       return
     }
 
-    console.log(player.value, started.value, waiting.value)
-
-    if (status.waiting && player.value === 'yellow') {
+    if (status.value.waiting && player.value === 'yellow') {
       // ゲームを開始する
       await saveStatus({
+        ...status.value,
         waiting: false,
         started: true,
       })
@@ -45,6 +48,7 @@ export const useGame = () => {
       // 次のプレイヤーが参加するまで待機する
       player.value = "red" // 先攻がセットされる
       await saveStatus({
+        ...status.value,
         waiting: true,
         started: false,
       })
@@ -60,6 +64,7 @@ export const useGame = () => {
     // ユーザーが離脱した時、初期化にする
     saveBoard(createBoard())
     await saveStatus({
+      turn: true,
       waiting: false,
       started: false,
     })
@@ -70,13 +75,34 @@ export const useGame = () => {
   })
 
   const selectCol = (colIndex: number) => {
+    if(gameset.value){
+      return
+    }
+
+    if(player.value === 'empty'){
+      return
+    }
+
+    if(player.value === 'yellow' && status.value.turn ){
+      return
+    }
+
+    if(player.value === 'red' && !status.value.turn ){
+      return
+    }
+    
+
     const row = checkCellCount(board.value)[colIndex]
     if (row >= ROWS) {
       return
     }
-    board.value[row][colIndex] = "red"
+    board.value[row][colIndex] = player.value
 
     saveBoard(board.value)
+    saveStatus({
+      ...status.value,
+      turn: !status.value.turn
+    })
   }
 
   const resultStatus = computed(() => {
@@ -86,13 +112,18 @@ export const useGame = () => {
     }
   })
 
+  const gameset = computed( () => {
+    return resultStatus.value.red || resultStatus.value.yellow
+  })
+
+
   return {
     player,
-    started,
-    waiting,
+    status,
     cellCounts,
     board,
     selectCol,
     resultStatus,
+    gameset
   }
 }
