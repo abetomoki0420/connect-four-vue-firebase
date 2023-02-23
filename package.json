@@ -8,6 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "firebase": "^9.17.1",
     "remeda": "^1.6.2",
     "vue": "^3.2.25",
     "zod": "^3.20.6"
