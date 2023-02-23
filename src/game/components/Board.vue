@@ -2,13 +2,18 @@
 import { useGame } from '../composables/useGame';
 import { ROWS } from "../lib"
 
-const { board, selectCol, cellCounts, resultStatus } = useGame()
+const { player, board, selectCol, cellCounts, resultStatus, started, waiting } = useGame()
 
 </script>
 
 <template>
+  <div v-if="waiting">
+    waiting...
+  </div>
   <div class="container">
     <div class="board">
+      player: {{ player }}
+      started: {{  started }} waiting: {{  waiting }}
       {{  cellCounts  }}
       {{  resultStatus  }}
       <div v-for="(r, ri) in board" :key="ri" class="row">
