@@ -7,23 +7,26 @@ const { gameset, player, board, selectCol, cellCounts, resultStatus, status } =
 </script>
 
 <template>
-  <div v-if="gameset">Win : {{ resultStatus.red ? "red" : "yellow" }}</div>
+  
   <div v-if="status.waiting">waiting...</div>
   <div v-else class="container">
     <div class="board">
-      player: {{ player }} turn: {{ status.turn ? "red" : "yellow" }} started:
-      {{ status.started }} waiting: {{ status.waiting }}
-      {{ cellCounts }}
-      {{ resultStatus }}
+      <div>
+        Your color: {{ player }} 
+      </div>
+      <div>
+        It is {{ status.turn ? "red" : "yellow" }} turn
+      </div>
+      <div v-if="gameset"> {{ resultStatus.red ? "red" : "yellow" }} won</div>
       <div v-for="(r, ri) in board" :key="ri" class="row">
         <div
           v-for="(c, ci) in r"
           :key="`${ri}${ci}`"
           class="col"
+          :class=" board[ROWS - ri - 1][ci]"
           @click="selectCol(ci)"
         >
           <span class="cell">
-            {{ board[ROWS - ri - 1][ci] }}
           </span>
         </div>
       </div>
@@ -33,17 +36,22 @@ const { gameset, player, board, selectCol, cellCounts, resultStatus, status } =
 
 <style scoped>
 .container {
+  display: flex;
+  justify-content: center;
   margin: 0 auto;
   padding: 1rem;
 }
 .board {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.8rem;
+  border: 1px solid rgba(1,1,1,0.2);
+  padding: 1rem;
+  border-radius: 1rem;
 }
 .row {
   display: flex;
-  gap: 1rem;
+  gap: 0.8rem;
 }
 
 .col {
@@ -52,5 +60,15 @@ const { gameset, player, board, selectCol, cellCounts, resultStatus, status } =
   background: rgba(1, 1, 1, 0.2);
   text-decoration: none;
   user-select: none;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.col.red {
+  background: tomato;
+}
+
+.col.yellow {
+  background: yellow;
 }
 </style>
